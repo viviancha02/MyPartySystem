@@ -1,18 +1,20 @@
 let system;
 let mouseTarget;
 let dropping = false;
+let maxFlock = 40;
 
 function setup() {
-  createCanvas(720, 400);
+  createCanvas(420, 920);
   system = new ParticleSystem();
 
   // 마우스가 캔버스에 들어오기 전에는 가운데를 기준으로 삼습니다.
   mouseTarget = createVector(width / 2, height / 2);
 
   // 처음부터 비둘기들이 날아다니도록 채워 둡니다.
-  for (let i = 0; i < 40; i++) {
-    system.addParticle(createVector(random(width), random(height)));
-  }
+  startFlock();
+
+  document.getElementById("reset").addEventListener("click", resetScene);
+  document.getElementById("more").addEventListener("click", addMore);
 }
 
 function draw() {
@@ -20,7 +22,7 @@ function draw() {
 
   // 추락 중이 아닐 때만 새로운 비둘기가 나옵니다.
   if (!dropping) {
-    system.addParticle(randomStart());
+    system.addParticle(randomStart(), maxFlock);
   }
 
   system.run();
@@ -44,6 +46,29 @@ function mousePressed() {
     dropping = true;
   } else {
     dropping = false;
+  }
+}
+
+function startFlock() {
+  for (let i = 0; i < maxFlock; i++) {
+    system.addParticle(createVector(random(width), random(height)), maxFlock);
+  }
+}
+
+// RESET: 쌓인 비둘기를 모두 지우고 처음 상태로 돌아갑니다.
+function resetScene() {
+  system.particles = [];
+  dropping = false;
+  maxFlock = 40;
+  mouseTarget.set(width / 2, height / 2);
+  startFlock();
+}
+
+// MORE: 쌓인 비둘기는 그대로 두고 나는 비둘기만 더 늘립니다.
+function addMore() {
+  maxFlock += 20;
+  for (let i = 0; i < 20; i++) {
+    system.addParticle(randomStart(), maxFlock);
   }
 }
 

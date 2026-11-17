@@ -3,12 +3,12 @@ class ParticleSystem {
         this.particles = [];
     }
 
-    addParticle(position) {
+    addParticle(position, limit = 40) {
         let flying = 0;
         for (let p of this.particles) {
             if (!p.falling && !p.landed) flying++;
         }
-        if (flying < 40) {
+        if (flying < limit) {
             this.particles.push(new Particle(position));
         }
     }
