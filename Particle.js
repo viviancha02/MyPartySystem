@@ -1,9 +1,13 @@
 class Particle {
     constructor(position) {
-        this.acceleration = createVector(0, 0.05);
-        this.velocity = createVector(random(-0.5, 0.5), random(-0.5, 0.5));
         this.position = position.copy();
-        this.lifespan = 255;
+        this.velocity = createVector(random(-1, 1), random(-1, 1));
+        this.offset = p5.Vector.random2D().mult(random(20, 100));
+        this.angle = 0;
+        this.size = random(14, 22);
+        this.falling = false;
+        this.landed = false;
+        this.stacked = false;
     }
 
     run() {
@@ -12,20 +16,67 @@ class Particle {
     }
 
     update() {
-        this.velocity.add(this.acceleration);
-        this.position.add(this.velocity);
-        this.lifespan -= 2;
+        if (this.landed) return;
+
+        if (this.falling) {
+            // 추락
+            this.velocity.y += 0.3;
+            this.velocity.x *= 0.99;
+            this.angle += 0.1;
+            this.position.add(this.velocity);
+
+            if (this.position.y >= height - 10) {
+                this.position.y = height - 10;
+                this.landed = true;
+                this.angle = random(TWO_PI);
+            }
+        } else {
+            // 마우스 주변을 향해 날아감
+            let target = createVector(mouseX, mouseY).add(this.offset);
+            let desired = p5.Vector.sub(target, this.position);
+            desired.setMag(0.8);
+            this.velocity.lerp(desired, 0.04);
+            this.position.add(this.velocity);
+            this.angle = this.velocity.heading();
+        }
     }
 
     display() {
-        stroke(180, 225, 255, this.lifespan);
-        strokeWeight(2);
-        fill(135, 206, 235, this.lifespan);
-        ellipse(this.position.x, this.position.y, 12, 12);
-    }
+        push();
+        translate(this.position.x, this.position.y);
+        rotate(this.angle);
 
-    isDead() {
-        return this.lifespan < 0;
+        let s = this.size;
+
+        // 몸통
+        noStroke();
+        fill(255);
+        ellipse(0, 0, s, s * 0.5);
+
+        // 머리
+        circle(s * 0.45, -s * 0.18, s * 0.34);
+
+        // 부리
+        triangle(
+            s * 0.6, -s * 0.2,
+            s * 0.8, -s * 0.12,
+            s * 0.6, -s * 0.05
+        );
+
+        // 꼬리
+        triangle(
+            -s * 0.45, 0,
+            -s * 0.8, -s * 0.25,
+            -s * 0.8, s * 0.2
+        );
+
+        // 날개
+        noFill();
+        stroke(0);
+        strokeWeight(s * 0.07);
+        arc(-s * 0.05, -s * 0.02, s * 0.7, s * 0.45, PI, TWO_PI);
+
+        pop();
     }
 }
 
