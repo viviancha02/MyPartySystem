@@ -1,17 +1,22 @@
+/* ─────────────────────────────────────────────
+   페이지 전체 기본 모양
+   검은 배경, 가운데 정렬, 기본 글꼴
+   ───────────────────────────────────────────── */
 html, body {
   margin: 0;
   padding: 0;
-  align-content: center;
   text-align: center;
   color: #eee;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: #000;
 }
 
+/* 아래쪽 버튼 영역에 가리지 않도록 여유를 둡니다. */
 body {
-  padding-bottom: 110px;
+  padding-bottom: 160px;
 }
 
+/* 소개 글 */
 .intro {
   width: 720px;
   max-width: 90vw;
@@ -22,6 +27,11 @@ body {
   word-break: keep-all;
 }
 
+
+/* ─────────────────────────────────────────────
+   캔버스
+   세로로 길게 만들고, 화면 크기에 맞게 줄입니다.
+   ───────────────────────────────────────────── */
 canvas {
   display: block;
   margin-top: 12px;
@@ -35,17 +45,34 @@ canvas {
   touch-action: none;
 }
 
-/* 레트로 버튼 */
+
+/* ─────────────────────────────────────────────
+   버튼 영역
+   화면 왼쪽 아래에 고정하고, 세로로 쌓습니다.
+   ───────────────────────────────────────────── */
 .controls {
   position: fixed;
+  left: 20px;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
   z-index: 100;
 }
 
+/* MORE 버튼과 슬라이더를 가로로 나란히 놓습니다. */
+.more-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+/* ─────────────────────────────────────────────
+   레트로 버튼 디자인
+   크림색 테두리와 그림자를 사용합니다.
+   ───────────────────────────────────────────── */
 .controls button {
   font-family: "Courier New", monospace;
   font-size: 16px;
@@ -70,4 +97,61 @@ canvas {
 .controls button:active {
   transform: translate(4px, 4px);
   box-shadow: 0 0 0 #f2e9d8;
+}
+
+
+/* ─────────────────────────────────────────────
+   MORE 옆 슬라이더
+   다음 MORE 때 추가할 비둘기 수를 정합니다.
+   ───────────────────────────────────────────── */
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 슬라이더의 가로 막대 */
+.slider-wrap input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 110px;
+  height: 6px;
+  margin: 0;
+  background: #f2e9d8;
+  border: 2px solid #f2e9d8;
+  outline: none;
+  cursor: pointer;
+}
+
+/* 슬라이더의 손잡이 (크롬, 사파리) */
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 20px;
+  background: #0a0a0a;
+  border: 3px solid #f2e9d8;
+  box-shadow: 2px 2px 0 #f2e9d8;
+  cursor: pointer;
+}
+
+/* 슬라이더의 손잡이 (파이어폭스) */
+.slider-wrap input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 20px;
+  background: #0a0a0a;
+  border: 3px solid #f2e9d8;
+  border-radius: 0;
+  box-shadow: 2px 2px 0 #f2e9d8;
+  cursor: pointer;
+}
+
+/* 슬라이더 옆 숫자 */
+#moreCountValue {
+  min-width: 24px;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  color: #f2e9d8;
+  letter-spacing: 1px;
+  text-align: left;
 }
