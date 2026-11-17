@@ -1,21 +1,16 @@
 class ParticleSystem {
-    constructor(position) {
-        this.origin = position.copy();
+    constructor() {
         this.particles = [];
     }
 
-    addParticle() {
+    addParticle(position) {
         let flying = 0;
         for (let p of this.particles) {
             if (!p.falling && !p.landed) flying++;
         }
         if (flying < 40) {
-            this.particles.push(new Particle(this.origin));
+            this.particles.push(new Particle(position));
         }
-    }
-
-    setOrigin(position) {
-        this.origin = position.copy();
     }
 
     // 한 마리만 남기고 나머지는 추락시킵니다.
@@ -25,7 +20,7 @@ class ParticleSystem {
 
         for (let p of this.particles) {
             if (p.falling || p.landed) continue;
-            let d = dist(p.position.x, p.position.y, mouseX, mouseY);
+            let d = dist(p.position.x, p.position.y, mouseTarget.x, mouseTarget.y);
             if (d < closest) {
                 closest = d;
                 keeper = p;
@@ -40,21 +35,8 @@ class ParticleSystem {
     }
 
     run() {
-        for (let i = this.particles.length-1; i >= 0; i--) {
-            let p = this.particles[i];
+        for (let p of this.particles) {
             p.run();
-
-            // 바닥에 쌓이도록 옆에 착륙한 비둘기 수만큼 높입니다.
-            if (p.landed && !p.stacked) {
-                p.stacked = true;
-                let stack = 0;
-                for (let other of this.particles) {
-                    if (other !== p && other.landed && abs(other.position.x - p.position.x) < 18) {
-                        stack++;
-                    }
-                }
-                p.position.y = max(0, p.position.y - stack * 6);
-            }
         }
     }
 

@@ -1,34 +1,44 @@
 let system;
-let canPos;
+let mouseTarget;
 let dropping = false;
 
 function setup() {
   createCanvas(720, 400);
-  system = new ParticleSystem(createVector(width / 2, 50));
-  canPos = createVector(width / 2, height / 2);
+  system = new ParticleSystem();
+
+  // 마우스가 캔버스에 들어오기 전에는 가운데를 기준으로 삼습니다.
+  mouseTarget = createVector(width / 2, height / 2);
+
+  // 처음부터 비둘기들이 날아다니도록 채워 둡니다.
+  for (let i = 0; i < 40; i++) {
+    system.addParticle(createVector(random(width), random(height)));
+  }
 }
 
 function draw() {
   background(0);
 
-  // 물뿌리개는 마우스를 따라 움직입니다.
-  canPos.set(mouseX, mouseY);
-  drawWateringCan(canPos.x, canPos.y);
-
-  // 비둘기는 물뿌리개 주둥이 끝에서 나옵니다.
-  system.setOrigin(createVector(canPos.x + 100, canPos.y + 25));
-
   // 추락 중이 아닐 때만 새로운 비둘기가 나옵니다.
   if (!dropping) {
-    system.addParticle();
+    system.addParticle(randomStart());
   }
 
   system.run();
 }
 
+function mouseMoved() {
+  mouseTarget.set(mouseX, mouseY);
+}
+
+function mouseDragged() {
+  mouseTarget.set(mouseX, mouseY);
+}
+
 // 클릭하면 한 마리만 남기고 나머지는 추락합니다.
 // 다시 클릭하면 새로운 비둘기가 다시 나옵니다.
 function mousePressed() {
+  mouseTarget.set(mouseX, mouseY);
+
   if (!dropping) {
     system.dropAll();
     dropping = true;
@@ -37,24 +47,11 @@ function mousePressed() {
   }
 }
 
-function drawWateringCan(x, y) {
-  push();
-  translate(x, y);
-
-  // 몸통
-  noStroke();
-  fill(180, 200, 210);
-  rect(0, 0, 60, 45, 8);
-
-  // 손잡이
-  noFill();
-  stroke(180, 200, 210);
-  strokeWeight(6);
-  arc(22, 0, 46, 46, PI, TWO_PI);
-
-  // 주둥이
-  strokeWeight(10);
-  line(58, 12, 100, 25);
-
-  pop();
+// 화면 가장자리에서 비둘기가 등장합니다.
+function randomStart() {
+  let side = floor(random(4));
+  if (side === 0) return createVector(random(width), -20);
+  if (side === 1) return createVector(width + 20, random(height));
+  if (side === 2) return createVector(random(width), height + 20);
+  return createVector(-20, random(height));
 }

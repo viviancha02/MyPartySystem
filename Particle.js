@@ -1,13 +1,13 @@
 class Particle {
     constructor(position) {
         this.position = position.copy();
-        this.velocity = createVector(random(-1, 1), random(-1, 1));
-        this.offset = p5.Vector.random2D().mult(random(20, 100));
+        this.velocity = p5.Vector.random2D().mult(2);
+        this.offsetAngle = random(TWO_PI);
+        this.offsetRadius = random(40, 140);
         this.angle = 0;
-        this.size = random(14, 22);
+        this.size = random(26, 38);
         this.falling = false;
         this.landed = false;
-        this.stacked = false;
     }
 
     run() {
@@ -19,23 +19,31 @@ class Particle {
         if (this.landed) return;
 
         if (this.falling) {
-            // 추락
-            this.velocity.y += 0.3;
+            // 바닥으로 추락
+            this.velocity.y += 0.35;
             this.velocity.x *= 0.99;
-            this.angle += 0.1;
+            this.angle += 0.12;
             this.position.add(this.velocity);
+            this.position.x = constrain(this.position.x, 20, width - 20);
 
             if (this.position.y >= height - 10) {
-                this.position.y = height - 10;
+                this.position.y = height - 10 - random(0, 20);
                 this.landed = true;
                 this.angle = random(TWO_PI);
             }
         } else {
-            // 마우스 주변을 향해 날아감
-            let target = createVector(mouseX, mouseY).add(this.offset);
+            // 마우스 주변을 계속 돌며 날아감
+            this.offsetAngle += 0.02;
+            let target = createVector(
+                mouseTarget.x + cos(this.offsetAngle) * this.offsetRadius,
+                mouseTarget.y + sin(this.offsetAngle) * this.offsetRadius
+            );
+            target.x = constrain(target.x, 30, width - 30);
+            target.y = constrain(target.y, 30, height - 30);
+
             let desired = p5.Vector.sub(target, this.position);
-            desired.setMag(0.8);
-            this.velocity.lerp(desired, 0.04);
+            desired.setMag(2);
+            this.velocity.lerp(desired, 0.05);
             this.position.add(this.velocity);
             this.angle = this.velocity.heading();
         }
